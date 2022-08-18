@@ -6,11 +6,11 @@
 #    By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/13 19:28:34 by fmarin-p          #+#    #+#              #
-#    Updated: 2022/08/03 17:19:04 by fmarin-p         ###   ########.fr        #
+#    Updated: 2022/08/18 13:58:15 by fmarin-p         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philosophers
+NAME = philo
 
 CFLAGS = -g -Wall -Wextra -Werror -I$(INCDIR)
 
