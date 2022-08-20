@@ -6,7 +6,7 @@
 #    By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/13 19:28:34 by fmarin-p          #+#    #+#              #
-#    Updated: 2022/08/18 13:58:15 by fmarin-p         ###   ########.fr        #
+#    Updated: 2022/08/20 20:00:22 by fmarin-p         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = philo
 
 CFLAGS = -g -Wall -Wextra -Werror -I$(INCDIR)
 
-SRCFILES = *.c 
+SRCFILES = main.c philo_actions.c utils.c
 OBJFILES = $(SRCFILES:.c=.o)
 
 SRCOBJ = $(addprefix $(OBJDIR), $(OBJFILES))
@@ -26,7 +26,7 @@ OBJDIR = obj/
 all: $(NAME)
 
 $(NAME): $(SRCOBJ)
-	gcc -o $@ $^
+	gcc -fsanitize=thread -o $@ $^
 
 $(OBJDIR)%.o: $(SRCDIR)%.c
 	mkdir -p obj

@@ -6,34 +6,11 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/18 17:34:47 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/20 20:47:02 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-void	print_usage(void)
-{
-	printf("Correct usage: ./philo number_of_philosophers ");
-	printf("time_to_die time_to_eat time_to_sleep ");
-	printf("[number_of_times_each_philosopher_must_eat]\n");
-}
-
-int	ft_atoi(const char *str)
-{
-	int	num;
-
-	num = 0;
-	while ((*str >= 9 && *str <= 13) || *str == 32 || *str == 43)
-		++str;
-	if (*str == 45)
-		return (-1);
-	while (*str >= 48 && *str <= 57)
-		num = num * 10 + (*(str++) - 48);
-	if (*(--str) - 48 != num % 10)
-		return (-1);
-	return (num);
-}
 
 t_table	*create_table(int argc, char **argv)
 {
@@ -57,18 +34,25 @@ t_table	*create_table(int argc, char **argv)
 	i = -1;
 	while (++i < table->n_philosophers)
 		pthread_mutex_init(&table->fork[i], NULL);
-	table->pos = 1;
+	pthread_mutex_init(&table->print, NULL);
+	table->dead = 0;
+	table->g_start.tv_sec = 0;
 	return (table);
 }
 
-void	*philo_routine(void *table)
+void	end_simulation(t_table *table, pthread_t *philo)
 {
-	(void) table;
-	printf("holi\n");
-	return (0);
+	int	i;
+
+	i = -1;
+	while (++i < table->n_philosophers)
+		pthread_mutex_destroy(&table->fork[i]);
+	free(table->fork);
+	free(philo);
+	free(table);
 }
 
-void	init_table(t_table *table)
+int	main_thread(t_table *table)
 {
 	pthread_t	*philo;
 	int			i;
@@ -76,10 +60,21 @@ void	init_table(t_table *table)
 	philo = malloc(sizeof(pthread_t) * table->n_philosophers);
 	i = -1;
 	while (++i < table->n_philosophers)
-		pthread_create(&philo[i], NULL, &philo_routine, (void *)table);
+		if (pthread_create(&philo[i], NULL, &philo_routine, (void *)table))
+			return (1);
 	i = -1;
 	while (++i < table->n_philosophers)
-		pthread_join(philo[i], NULL);
+		if (pthread_join(philo[i], NULL))
+			return (1);
+	while (1)
+	{
+		if (table->dead)
+		{
+			end_simulation(table, philo);
+			break ;
+		}
+	}
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -97,6 +92,7 @@ int	main(int argc, char **argv)
 		printf("Error while parsing arguments.\n");
 		return (0);
 	}
-	init_table(table);
+	if (main_thread(table))
+		printf("Error while creating or waiting on threads\n");
 	return (0);
 }
