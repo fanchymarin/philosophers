@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/20 20:47:02 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/21 18:42:12 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ t_table	*create_table(int argc, char **argv)
 	while (++i < table->n_philosophers)
 		pthread_mutex_init(&table->fork[i], NULL);
 	pthread_mutex_init(&table->print, NULL);
+	pthread_mutex_init(&table->lock, NULL);
 	table->dead = 0;
-	table->g_start.tv_sec = 0;
+	table->n_philosophers_full = 0;
 	return (table);
 }
 
@@ -46,10 +47,44 @@ void	end_simulation(t_table *table, pthread_t *philo)
 
 	i = -1;
 	while (++i < table->n_philosophers)
+		pthread_join(philo[i], NULL);
+	i = -1;
+	while (++i < table->n_philosophers)
 		pthread_mutex_destroy(&table->fork[i]);
+	pthread_mutex_destroy(&table->print);
+	pthread_mutex_destroy(&table->lock);
 	free(table->fork);
+	free(table->stats);
 	free(philo);
 	free(table);
+}
+
+void	thread_monitoring(t_table *table, pthread_t *philo)
+{
+	int	i;
+
+	while (!table->stats[0].start.tv_sec)
+		;
+	while (1)
+	{
+		i = -1;
+		if (table->dead)
+		{
+			end_simulation(table, philo);
+			break ;
+		}
+		while (++i < table->n_philosophers)
+		{
+			gettimeofday(&table->stats[i].end, NULL);
+			if (time_diff(&table->stats[i].start, &table->stats[i].end)
+				>= table->time_to_die && !table->stats[i].already_eating)
+			{
+				print_stat(table, &table->stats[i], DEAD);
+				table->dead = 1;
+				break ;
+			}
+		}
+	}
 }
 
 int	main_thread(t_table *table)
@@ -58,22 +93,16 @@ int	main_thread(t_table *table)
 	int			i;
 
 	philo = malloc(sizeof(pthread_t) * table->n_philosophers);
+	table->stats = malloc(sizeof(t_stats) * table->n_philosophers);
+	table->order = 0;
+	i = -1;
+	while (++i < table->n_philosophers)
+		init_stats(table, &table->stats[i]);
 	i = -1;
 	while (++i < table->n_philosophers)
 		if (pthread_create(&philo[i], NULL, &philo_routine, (void *)table))
 			return (1);
-	i = -1;
-	while (++i < table->n_philosophers)
-		if (pthread_join(philo[i], NULL))
-			return (1);
-	while (1)
-	{
-		if (table->dead)
-		{
-			end_simulation(table, philo);
-			break ;
-		}
-	}
+	thread_monitoring(table, philo);
 	return (0);
 }
 
@@ -83,7 +112,9 @@ int	main(int argc, char **argv)
 
 	if (argc < 5 || argc > 6)
 	{
-		print_usage();
+		printf("Correct usage: ./philo number_of_philosophers ");
+		printf("time_to_die time_to_eat time_to_sleep ");
+		printf("[number_of_times_each_philosopher_must_eat]\n");
 		return (0);
 	}
 	table = create_table(argc, argv);

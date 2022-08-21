@@ -6,18 +6,11 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 19:28:40 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/20 20:36:39 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/21 18:06:55 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-void	print_usage(void)
-{
-	printf("Correct usage: ./philo number_of_philosophers ");
-	printf("time_to_die time_to_eat time_to_sleep ");
-	printf("[number_of_times_each_philosopher_must_eat]\n");
-}
 
 int	ft_atoi(const char *str)
 {
@@ -65,36 +58,32 @@ char	*choose_color(char *message)
 	return (0);
 }
 
-int	time_diff(struct timeval start, struct timeval end)
+int	time_diff(struct timeval *start, struct timeval *end)
 {
-	return (((end.tv_sec * 1000000 + end.tv_usec)
-			- (start.tv_sec * 1000000 + start.tv_usec)) / 1000);
+	return (((end->tv_sec * 1000000 + end->tv_usec)
+			- (start->tv_sec * 1000000 + start->tv_usec)) / 1000);
 }
 
-void	print_stat(t_table *table, t_stats *stats, char *message)
-{
-	if (table->dead)
-		return ;
-	pthread_mutex_lock(&table->print);
-	printf("\033[0;37m");
-	printf("[%d] ", time_diff(table->g_start, stats->end));
-	printf("%s", choose_color(message));
-	printf("%d %s\n", stats->pos, message);
-	pthread_mutex_unlock(&table->print);
-}
-
-t_stats	init_stats(pthread_mutex_t *lock, int last)
+void	init_stats(t_table *table, t_stats *stats)
 {
 	static int	order = 1;
-	t_stats		stats;
+	int			*fork_1;
+	int			*fork_2;
 
-	pthread_mutex_lock(lock);
-	stats.pos = order++;
-	stats.left_fork = stats.pos - 1;
-	if (stats.pos == last)
-		stats.right_fork = 0;
+	stats->pos = order++;
+	stats->start.tv_sec = 0;
+	stats->meals_left = table->number_of_meals;
+	stats->already_eating = 0;
+	fork_1 = &stats->left_fork;
+	fork_2 = &stats->right_fork;
+	if (stats->pos % 2 == 0)
+	{
+		fork_1 = &stats->right_fork;
+		fork_2 = &stats->left_fork;
+	}
+	*fork_1 = stats->pos - 1;
+	if (stats->pos == table->n_philosophers)
+		*fork_2 = 0;
 	else
-		stats.right_fork = stats.pos;
-	pthread_mutex_unlock(lock);
-	return (stats);
+		*fork_2 = stats->pos;
 }
