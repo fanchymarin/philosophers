@@ -6,11 +6,11 @@
 #    By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/13 19:28:34 by fmarin-p          #+#    #+#              #
-#    Updated: 2022/08/21 18:57:25 by fmarin-p         ###   ########.fr        #
+#    Updated: 2022/08/22 19:35:59 by fmarin-p         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo
+NAME = philo_bonus
 
 CFLAGS = -g -Wall -Wextra -Werror -I$(INCDIR)
 
