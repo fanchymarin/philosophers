@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/23 14:32:54 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/23 20:12:52 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,45 +33,46 @@ t_philo	*create_philo(int argc, char **argv)
 		return (0);
 	return (philo);
 }
-/*
-void	end_simulation(t_table *table, pthread_t *philo)
-{
-	int	i;
 
-	i = -1;
-	while (++i < table->n_philosophers)
-		pthread_join(philo[i], NULL);
-	i = -1;
-	while (++i < table->n_philosophers)
-		pthread_mutex_destroy(&table->fork[i]);
-	pthread_mutex_destroy(&table->print);
-	pthread_mutex_destroy(&table->lock);
-	free(table->fork);
-	free(table->stats);
+void	wait_and_finish(t_philo *philo)
+{
+	int	status;
+
+	while (philo->n_philosophers)
+	{
+		waitpid(0, &status, 0);
+		if (WEXITSTATUS(status) == 2)
+			--philo->n_philosophers;
+		else
+			break ;
+	}
+	sem_close(philo->forks);
+	sem_close(philo->print);
 	free(philo);
-	free(table);
 }
-*/
 
 int	main_process(t_philo *philo)
 {
 	int	i;
 	int	pid;
-	int	status;
 
+	sem_unlink("FORKS");
+	sem_unlink("PRINT");
+	philo->forks = sem_open("FORKS", O_CREAT, 0777,
+			philo->n_philosophers);
+	philo->print = sem_open("PRINT", O_CREAT, 0777, 1);
 	i = -1;
 	gettimeofday(&philo->g_start, NULL);
-	sem_unlink("FORKS");
-	sem_unlink("GET_FORKS");
-	sem_unlink("PRINT");
 	while (++i < philo->n_philosophers)
 	{
 		philo->pos++;
 		pid = fork();
 		if (!pid)
 			philo_routine(philo);
+		else if (pid == -1)
+			return (1);
 	}
-	waitpid(-1, &status, 0);
+	wait_and_finish(philo);
 	return (0);
 }
 
