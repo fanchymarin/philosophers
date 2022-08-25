@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 12:06:49 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:23:38 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	print_stat(t_philo *philo, char *message)
 {
-	sem_wait(philo->print);
-//	printf("\033[0;37m");
-	printf("%d ", time_diff(&philo->g_start, &philo->end));
+	sem_wait(philo->print)
+	printf("\033[0;37m");
+	printf("[%d] ", time_diff(&philo->g_start, &philo->end));
 	printf("%s", choose_color(message));
 	printf("%d %s\n", philo->pos, message);
 	if (ft_strncmp(message, DEAD, 5))
@@ -62,12 +62,10 @@ void	philo_routine(t_philo *philo)
 	pthread_create(&philo->proc_monitoring, NULL, proc_monitoring, philo);
 	while (1)
 	{
-		sem_wait(philo->get_forks);
 		sem_wait(philo->forks);
 		print_stat(philo, FORK);
 		sem_wait(philo->forks);
 		print_stat(philo, FORK);
-		sem_post(philo->get_forks);
 		get_to_eat(philo);
 		print_stat(philo, SLEEP);
 		usleep(philo->time_to_sleep * 1000);

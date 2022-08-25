@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 17:13:19 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/24 11:12:49 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/25 12:57:04 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@
 typedef struct s_philo
 {
 	sem_t			*forks;
-	sem_t			*get_forks;
 	sem_t			*print;
 	pthread_t		proc_monitoring;
 	int				pos;
@@ -56,8 +55,6 @@ int		time_diff(struct timeval *start, struct timeval *end);
 char	*choose_color(char *message);
 
 //Philo actions
-//void	get_to_eat(t_table *table, t_stats *stats);
 void	philo_routine(t_philo *philo);
-void	print_stat(t_philo *philo, char *message);
 
 #endif

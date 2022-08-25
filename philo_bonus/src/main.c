@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 12:08:08 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/25 13:22:31 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,8 @@ int	main_process(t_philo *philo)
 
 	sem_unlink("FORKS");
 	sem_unlink("PRINT");
-	sem_unlink("GET_FORKS");
 	philo->forks = sem_open("FORKS", O_CREAT, 0777,
 			philo->n_philosophers);
-	philo->get_forks = sem_open("GET_FORKS", O_CREAT, 0777, 1);
 	philo->print = sem_open("PRINT", O_CREAT, 0777, 1);
 	i = -1;
 	gettimeofday(&philo->g_start, NULL);
