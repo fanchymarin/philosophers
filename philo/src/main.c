@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/21 18:42:12 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/25 12:29:28 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void	thread_monitoring(t_table *table, pthread_t *philo)
 	while (1)
 	{
 		i = -1;
+		usleep(100);
 		if (table->dead)
 		{
 			end_simulation(table, philo);
