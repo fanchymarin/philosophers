@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 13:22:31 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/01 23:55:01 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,32 @@ t_philo	*create_philo(int argc, char **argv)
 	if (philo->n_philosophers == -1 || philo->time_to_die == -1
 		|| philo->time_to_eat == -1 || philo->time_to_sleep == -1
 		|| philo->number_of_meals == -1)
+	{
+		free(philo);
 		return (0);
+	}
 	return (philo);
+}
+
+void	error_exit(int error, t_philo *philo)
+{
+	if (!error)
+	{
+		printf("Correct usage: ./philo number_of_philosophers ");
+		printf("time_to_die time_to_eat time_to_sleep ");
+		printf("[number_of_times_each_philosopher_must_eat]\n");
+	}
+	else if (error == 1)
+		printf("Error while parsing arguments.\n");
+	else if (error == 2)
+		printf("Error while creating processes.\n");
+	if (philo)
+	{
+		free(philo);
+		sem_close(philo->forks);
+		sem_close(philo->print);
+	}
+	exit(1);
 }
 
 void	wait_and_finish(t_philo *philo)
@@ -81,19 +105,11 @@ int	main(int argc, char **argv)
 	t_philo	*default_philo;
 
 	if (argc < 5 || argc > 6)
-	{
-		printf("Correct usage: ./philo number_of_philosophers ");
-		printf("time_to_die time_to_eat time_to_sleep ");
-		printf("[number_of_times_each_philosopher_must_eat]\n");
-		return (0);
-	}
+		error_exit(0, 0);
 	default_philo = create_philo(argc, argv);
 	if (!default_philo)
-	{
-		printf("Error while parsing arguments.\n");
-		return (0);
-	}
+		error_exit(1, 0);
 	if (main_process(default_philo))
-		printf("Error while creating processes\n");
+		error_exit(2, default_philo);
 	return (0);
 }

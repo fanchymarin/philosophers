@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 13:23:38 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/08/26 14:25:06 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	print_stat(t_philo *philo, char *message)
 {
-	sem_wait(philo->print)
+	sem_wait(philo->print);
 	printf("\033[0;37m");
 	printf("[%d] ", time_diff(&philo->g_start, &philo->end));
 	printf("%s", choose_color(message));
