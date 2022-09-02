@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/01 23:55:01 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/02 10:28:57 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void	wait_and_finish(t_philo *philo)
 {
 	int	status;
 
+	kill(0, SIGCONT);
 	while (philo->n_philosophers)
 	{
 		waitpid(0, &status, 0);
@@ -91,10 +92,12 @@ int	main_process(t_philo *philo)
 	{
 		philo->pos++;
 		pid = fork();
-		if (!pid)
-			philo_routine(philo);
+		if (pid)
+			kill(pid, SIGSTOP);
 		else if (pid == -1)
 			return (1);
+		else
+			philo_routine(philo);
 	}
 	wait_and_finish(philo);
 	return (0);
