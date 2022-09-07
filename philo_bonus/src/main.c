@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/02 10:28:57 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/07 15:52:30 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ t_philo	*create_philo(int argc, char **argv)
 	philo->time_to_eat = ft_atoi(argv[3]);
 	philo->time_to_sleep = ft_atoi(argv[4]);
 	philo->pos = 0;
-	philo->already_eating = 0;
 	if (argc > 5)
 		philo->number_of_meals = ft_atoi(argv[5]);
 	else
@@ -58,29 +57,38 @@ void	error_exit(int error, t_philo *philo)
 	exit(1);
 }
 
-void	wait_and_finish(t_philo *philo)
+void	wait_and_finish(t_philo *philo, int *pid)
 {
+	int	i;
 	int	status;
+	int	dead_process;
 
-	kill(0, SIGCONT);
 	while (philo->n_philosophers)
 	{
-		waitpid(0, &status, 0);
+		dead_process = waitpid(0, &status, 0);
 		if (WEXITSTATUS(status) == 2)
 			--philo->n_philosophers;
 		else
+		{
+			i = -1;
+			while (++i < philo->n_philosophers)
+				if (dead_process != pid[i])
+					kill(pid[i], SIGINT);
 			break ;
+		}
 	}
 	sem_close(philo->forks);
 	sem_close(philo->print);
 	free(philo);
+	free(pid);
 }
 
 int	main_process(t_philo *philo)
 {
 	int	i;
-	int	pid;
+	int	*pid;
 
+	pid = malloc(sizeof(int) * philo->n_philosophers);
 	sem_unlink("FORKS");
 	sem_unlink("PRINT");
 	philo->forks = sem_open("FORKS", O_CREAT, 0777,
@@ -91,15 +99,16 @@ int	main_process(t_philo *philo)
 	while (++i < philo->n_philosophers)
 	{
 		philo->pos++;
-		pid = fork();
-		if (pid)
-			kill(pid, SIGSTOP);
-		else if (pid == -1)
-			return (1);
-		else
+		pid[i] = fork();
+		if (!pid[i])
 			philo_routine(philo);
+		else if (pid[i] == -1)
+		{
+			free(pid);
+			return (1);
+		}
 	}
-	wait_and_finish(philo);
+	wait_and_finish(philo, pid);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/02 10:30:56 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/07 16:20:03 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ void	print_stat(t_table *table, t_stats *stats, char *message)
 		pthread_mutex_unlock(&table->print);
 		return ;
 	}
-//	printf("\033[0;37m");
-	printf("%d ", time_diff(&table->g_start, &stats->end));
+	printf("\033[0;37m");
+	printf("[%d] ", time_diff(&table->g_start, &stats->end));
 	printf("%s", choose_color(message));
 	printf("%d %s\n", stats->pos, message);
 	pthread_mutex_unlock(&table->print);

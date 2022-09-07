@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 17:13:19 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 12:57:04 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/07 15:51:24 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ typedef struct s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_meals;
-	int				already_eating;
 	struct timeval	g_start;
 	struct timeval	start;
 	struct timeval	end;

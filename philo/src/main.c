@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/25 12:29:28 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/07 16:05:02 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,14 @@ t_table	*create_table(int argc, char **argv)
 	if (table->n_philosophers == -1 || table->time_to_die == -1
 		|| table->time_to_eat == -1 || table->time_to_sleep == -1
 		|| table->number_of_meals == -1)
+	{
+		free(table);
 		return (0);
+	}
 	table->fork = malloc(sizeof(pthread_mutex_t) * table->n_philosophers);
 	i = -1;
 	while (++i < table->n_philosophers)
 		pthread_mutex_init(&table->fork[i], NULL);
-	pthread_mutex_init(&table->print, NULL);
-	pthread_mutex_init(&table->lock, NULL);
-	table->dead = 0;
-	table->n_philosophers_full = 0;
 	return (table);
 }
 
@@ -93,9 +92,13 @@ int	main_thread(t_table *table)
 	pthread_t	*philo;
 	int			i;
 
+	pthread_mutex_init(&table->print, NULL);
+	pthread_mutex_init(&table->lock, NULL);
 	philo = malloc(sizeof(pthread_t) * table->n_philosophers);
 	table->stats = malloc(sizeof(t_stats) * table->n_philosophers);
 	table->order = 0;
+	table->dead = 0;
+	table->n_philosophers_full = 0;
 	i = -1;
 	while (++i < table->n_philosophers)
 		init_stats(table, &table->stats[i]);
@@ -116,15 +119,18 @@ int	main(int argc, char **argv)
 		printf("Correct usage: ./philo number_of_philosophers ");
 		printf("time_to_die time_to_eat time_to_sleep ");
 		printf("[number_of_times_each_philosopher_must_eat]\n");
-		return (0);
+		return (1);
 	}
 	table = create_table(argc, argv);
 	if (!table)
 	{
 		printf("Error while parsing arguments.\n");
-		return (0);
+		return (1);
 	}
 	if (main_thread(table))
-		printf("Error while creating or waiting on threads\n");
+	{
+		printf("Error while creating or waiting on threads.\n");
+		return (1);
+	}
 	return (0);
 }
