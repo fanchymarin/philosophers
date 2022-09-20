@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 19:28:40 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/21 18:06:55 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/20 16:43:05 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,23 +67,13 @@ int	time_diff(struct timeval *start, struct timeval *end)
 void	init_stats(t_table *table, t_stats *stats)
 {
 	static int	order = 1;
-	int			*fork_1;
-	int			*fork_2;
 
 	stats->pos = order++;
 	stats->start.tv_sec = 0;
 	stats->meals_left = table->number_of_meals;
-	stats->already_eating = 0;
-	fork_1 = &stats->left_fork;
-	fork_2 = &stats->right_fork;
-	if (stats->pos % 2 == 0)
-	{
-		fork_1 = &stats->right_fork;
-		fork_2 = &stats->left_fork;
-	}
-	*fork_1 = stats->pos - 1;
+	stats->right_fork = stats->pos - 1;
 	if (stats->pos == table->n_philosophers)
-		*fork_2 = 0;
+		stats->left_fork = 0;
 	else
-		*fork_2 = stats->pos;
+		stats->left_fork = stats->pos;
 }

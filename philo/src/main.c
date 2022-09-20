@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/07 16:05:02 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/20 16:44:01 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	thread_monitoring(t_table *table, pthread_t *philo)
 		{
 			gettimeofday(&table->stats[i].end, NULL);
 			if (time_diff(&table->stats[i].start, &table->stats[i].end)
-				>= table->time_to_die && !table->stats[i].already_eating)
+				>= table->time_to_die)
 			{
 				print_stat(table, &table->stats[i], DEAD);
 				table->dead = 1;

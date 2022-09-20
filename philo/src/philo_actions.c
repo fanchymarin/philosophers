@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/07 16:20:03 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/20 16:49:12 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ void	print_stat(t_table *table, t_stats *stats, char *message)
 
 void	get_to_eat(t_table *table, t_stats *stats)
 {
-	stats->already_eating = 1;
 	print_stat(table, stats, EAT);
+	usleep(table->time_to_eat * 1000);
+	gettimeofday(&stats->start, NULL);
 	if (!--stats->meals_left)
 	{
 		pthread_mutex_lock(&table->lock);
@@ -38,11 +39,8 @@ void	get_to_eat(t_table *table, t_stats *stats)
 			table->dead = 1;
 		pthread_mutex_unlock(&table->lock);
 	}
-	usleep(table->time_to_eat * 1000);
-	gettimeofday(&stats->start, NULL);
 	pthread_mutex_unlock(&table->fork[stats->left_fork]);
 	pthread_mutex_unlock(&table->fork[stats->right_fork]);
-	stats->already_eating = 0;
 }
 
 t_stats	*init_philo(t_table *table)
@@ -56,6 +54,8 @@ t_stats	*init_philo(t_table *table)
 	pthread_mutex_unlock(&table->lock);
 	gettimeofday(&stats->start, NULL);
 	gettimeofday(&stats->end, NULL);
+	if (stats->pos % 2 == 0)
+		usleep(100);
 	return (stats);
 }
 
@@ -66,7 +66,7 @@ void	*philo_routine(void *p)
 
 	table = (t_table *)p;
 	stats = init_philo(table);
-	while (1)
+	while (!table->dead)
 	{
 		pthread_mutex_lock(&table->fork[stats->left_fork]);
 		print_stat(table, stats, FORK);
@@ -81,8 +81,6 @@ void	*philo_routine(void *p)
 		print_stat(table, stats, SLEEP);
 		usleep(table->time_to_sleep * 1000);
 		print_stat(table, stats, THINK);
-		if (table->dead)
-			break ;
 	}
 	return (0);
 }

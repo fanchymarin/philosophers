@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 17:13:19 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/08/21 17:43:37 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/09/20 16:07:00 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ typedef struct s_stats
 	int				left_fork;
 	int				right_fork;
 	int				meals_left;
-	int				already_eating;
 	struct timeval	start;
 	struct timeval	end;
 }	t_stats;
