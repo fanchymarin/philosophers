@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 19:28:40 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/20 16:43:05 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/10/05 16:00:52 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,16 +64,19 @@ int	time_diff(struct timeval *start, struct timeval *end)
 			- (start->tv_sec * 1000000 + start->tv_usec)) / 1000);
 }
 
-void	init_stats(t_table *table, t_stats *stats)
+void	ft_usleep(int usec)
 {
-	static int	order = 1;
+	struct timeval	start;
+	struct timeval	end;
+	int				i;
 
-	stats->pos = order++;
-	stats->start.tv_sec = 0;
-	stats->meals_left = table->number_of_meals;
-	stats->right_fork = stats->pos - 1;
-	if (stats->pos == table->n_philosophers)
-		stats->left_fork = 0;
-	else
-		stats->left_fork = stats->pos;
+	i = 0;
+	gettimeofday(&start, NULL);
+	while (i++ <= usec)
+	{
+		gettimeofday(&end, NULL);
+		if (time_diff(&start, &end) >= usec)
+			break ;
+		usleep(1000);
+	}
 }

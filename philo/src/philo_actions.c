@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/20 16:49:12 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/10/05 15:42:19 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,24 @@ void	print_stat(t_table *table, t_stats *stats, char *message)
 	pthread_mutex_unlock(&table->print);
 }
 
+void	init_stats(t_table *table, t_stats *stats)
+{
+	static int	order = 1;
+
+	stats->pos = order++;
+	stats->start.tv_sec = 0;
+	stats->meals_left = table->number_of_meals;
+	stats->right_fork = stats->pos - 1;
+	if (stats->pos == table->n_philosophers)
+		stats->left_fork = 0;
+	else
+		stats->left_fork = stats->pos;
+}
+
 void	get_to_eat(t_table *table, t_stats *stats)
 {
 	print_stat(table, stats, EAT);
-	usleep(table->time_to_eat * 1000);
+	ft_usleep(table->time_to_eat);
 	gettimeofday(&stats->start, NULL);
 	if (!--stats->meals_left)
 	{
@@ -79,7 +93,7 @@ void	*philo_routine(void *p)
 		print_stat(table, stats, FORK);
 		get_to_eat(table, stats);
 		print_stat(table, stats, SLEEP);
-		usleep(table->time_to_sleep * 1000);
+		ft_usleep(table->time_to_sleep);
 		print_stat(table, stats, THINK);
 	}
 	return (0);
