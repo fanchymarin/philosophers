@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:31:30 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/07 15:52:30 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/10/05 20:14:35 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ t_philo	*create_philo(int argc, char **argv)
 		free(philo);
 		return (0);
 	}
+	sem_unlink("FORKS");
+	sem_unlink("PRINT");
+	sem_unlink("LOCK");
 	return (philo);
 }
 
@@ -53,6 +56,7 @@ void	error_exit(int error, t_philo *philo)
 		free(philo);
 		sem_close(philo->forks);
 		sem_close(philo->print);
+		sem_close(philo->lock);
 	}
 	exit(1);
 }
@@ -79,6 +83,7 @@ void	wait_and_finish(t_philo *philo, int *pid)
 	}
 	sem_close(philo->forks);
 	sem_close(philo->print);
+	sem_close(philo->lock);
 	free(philo);
 	free(pid);
 }
@@ -89,11 +94,10 @@ int	main_process(t_philo *philo)
 	int	*pid;
 
 	pid = malloc(sizeof(int) * philo->n_philosophers);
-	sem_unlink("FORKS");
-	sem_unlink("PRINT");
 	philo->forks = sem_open("FORKS", O_CREAT, 0777,
 			philo->n_philosophers);
 	philo->print = sem_open("PRINT", O_CREAT, 0777, 1);
+	philo->lock = sem_open("LOCK", O_CREAT, 0777, 1);
 	i = -1;
 	gettimeofday(&philo->g_start, NULL);
 	while (++i < philo->n_philosophers)

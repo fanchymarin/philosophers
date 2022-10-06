@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 19:21:06 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/10/05 15:00:03 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/10/05 20:04:36 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,12 @@ void	philo_routine(t_philo *philo)
 	pthread_create(&philo->proc_monitoring, NULL, proc_monitoring, philo);
 	while (1)
 	{
+		sem_wait(philo->lock);
 		sem_wait(philo->forks);
 		print_stat(philo, FORK);
 		sem_wait(philo->forks);
 		print_stat(philo, FORK);
+		sem_post(philo->lock);
 		get_to_eat(philo);
 		print_stat(philo, SLEEP);
 		usleep(philo->time_to_sleep * 1000);

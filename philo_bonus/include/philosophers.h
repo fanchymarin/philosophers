@@ -6,7 +6,7 @@
 /*   By: fmarin-p <fmarin-p@student-42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 17:13:19 by fmarin-p          #+#    #+#             */
-/*   Updated: 2022/09/07 15:51:24 by fmarin-p         ###   ########.fr       */
+/*   Updated: 2022/10/05 20:02:10 by fmarin-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_philo
 {
 	sem_t			*forks;
 	sem_t			*print;
+	sem_t			*lock;
 	pthread_t		proc_monitoring;
 	int				pos;
 	int				n_philosophers;
