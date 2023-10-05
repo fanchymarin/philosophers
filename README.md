@@ -1,5 +1,9 @@
 # Philosophers - ⭐Grade 125/100
 
+#### Grade rating
+- ✅ = Okay project
+- ⭐ = Outstanding project
+
 This program simulates the dining philosophers problem, where a group of philosophers sit at a round table, alternately eating, thinking, or sleeping, while avoiding starvation and ensuring no two philosophers can eat simultaneously with the limited forks available. 
 The program aims to provide a safe and synchronized dining philosophers simulation using threads and processes scenarios, while adhering to the specified rules.
 
